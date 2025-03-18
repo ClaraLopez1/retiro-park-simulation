@@ -3,7 +3,8 @@ import threading
 import time
 from Activities.activity import Activity
 from Activities.Resources.boats import BoatRental
-from Activities.resource_activities import RentBoat
+from Activities.Resources.bikes import BikeRental
+from Activities.resource_activities import RentBoat, RentBike
 from Activities.simple_activities import Walking, WatchingPerformance, TakingPhotos
 
 
@@ -19,19 +20,22 @@ class Visitor(threading.Thread):
 
             print(f"Visitor {self.visitor_id} is starting: {activity.name}")
 
-            if isinstance(activity, RentBoat):
+            if isinstance(activity, (RentBoat, RentBike)):
                 activity.perform(self.visitor_id)
             else:
                 activity.perform(self.visitor_id)
 
+
 if __name__ == "__main__":
-    boat_rental = BoatRental(num_boats=5)
+    boat_rental = BoatRental(num_boats=2)
+    bike_rental = BikeRental(num_bikes=2)
 
     park_activities = [
         Walking(),
         WatchingPerformance(),
         TakingPhotos(),
-        RentBoat(boat_rental)
+        RentBoat(boat_rental),
+        RentBike(bike_rental)
     ]
 
     visitors = [Visitor(i, park_activities) for i in range(10)]
