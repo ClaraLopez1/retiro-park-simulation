@@ -15,7 +15,7 @@ class RentBoat(activity.Activity):
             print(f"Visitor {visitor_id} is using Boat {boat.boat_id}.")
             time.sleep(self.duration)
             self.boat_rental.return_boat(boat)
-            print(f"🏁 Visitor {visitor_id} finished kayaking.")
+            print(f"Visitor {visitor_id} finished kayaking.")
 
 class RentBike(activity.Activity):
     def __init__(self, bike_rental):
