@@ -7,7 +7,6 @@ from Activities.Resources.bikes import BikeRental
 from Activities.resource_activities import RentBoat, RentBike
 from Activities.simple_activities import Walking, WatchingPerformance, TakingPhotos
 
-
 class Visitor(threading.Thread):
     def __init__(self, visitor_id, park_activities):
         super().__init__()
@@ -20,10 +19,7 @@ class Visitor(threading.Thread):
 
             print(f"Visitor {self.visitor_id} is starting: {activity.name}")
 
-            if isinstance(activity, (RentBoat, RentBike)):
-                activity.perform(self.visitor_id)
-            else:
-                activity.perform(self.visitor_id)
+            activity.perform(self.visitor_id)
 
 
 if __name__ == "__main__":
@@ -38,7 +34,7 @@ if __name__ == "__main__":
         RentBike(bike_rental)
     ]
 
-    visitors = [Visitor(i, park_activities) for i in range(10)]
+    visitors = [Visitor(i, park_activities) for i in range(20)]
 
     for visitor in visitors:
         visitor.start()
