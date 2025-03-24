@@ -20,7 +20,8 @@ class Visitor(threading.Thread):
             print(f"Visitor {self.visitor_id} is starting: {activity.name}")
 
             activity.perform(self.visitor_id)
-
+#test
+print("hi")
 
 if __name__ == "__main__":
     boat_rental = BoatRental(num_boats=2)
