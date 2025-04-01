@@ -14,3 +14,10 @@ class WatchingPerformance(activity):
 class TakingPhotos(activity):
     def __init__(self):
         super().__init__("Taking Photos", 2, 5)
+
+class Running(activity):
+    def __init__(self):
+        super().__init__("Running", 5, 15)
+
+
+#TODO: visit monument

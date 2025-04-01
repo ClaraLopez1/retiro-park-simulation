@@ -13,7 +13,6 @@ class Boat:
         with self.lock:
             if not self.is_rented:
                 self.is_rented = True
-                print(f"Visitor {visitor_id} rented Boat {self.boat_id}.")
                 return True
             return False
 
@@ -44,9 +43,6 @@ class BoatRental:
     def return_boat(self, boat):
         with self.condition:
             boat.release()
-            print(f"Boat {boat.boat_id} is now available.")
 
             if not self.queue.empty():
-                next_visitor = self.queue.get()
-                print(f"Visitor {next_visitor}, a boat is now available!")
                 self.condition.notify()

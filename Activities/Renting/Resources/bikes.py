@@ -13,7 +13,6 @@ class Bike:
         with self.lock:
             if not self.is_rented:
                 self.is_rented = True
-                print(f"Visitor {visitor_id} rented Bike {self.bike_id}.")
                 return True
             return False
 
@@ -43,9 +42,6 @@ class BikeRental:
     def return_bike(self, bike):
         with self.condition:
             bike.release()
-            print(f"Bike {bike.bike_id} is now available.")
 
             if not self.queue.empty():
-                next_visitor = self.queue.get()
-                print(f"Visitor {next_visitor}, a bike is now available!")
                 self.condition.notify()

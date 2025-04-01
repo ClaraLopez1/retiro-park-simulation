@@ -6,7 +6,7 @@
 #
 #TODO: Implement the RetiroPark class
 #TODO:
-#  RentBike System (Similar to RentBoat, but with bikes instead of boats)
+#  RentBike System (Similar to RentBoat, but with bikes instead of boats) **Done**
 #  Sports Activities (Football, Tennis, Padel) with limited courts
 #  Cafes & Picnic Areas (Visitors can eat or rest)
 #  Park Areas & Movement (Visitors move between different zones)
