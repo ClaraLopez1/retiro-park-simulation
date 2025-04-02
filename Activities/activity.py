@@ -1,6 +1,8 @@
 import time
 import random
 
+from logger import log
+
 
 class Activity:
 
@@ -9,6 +11,6 @@ class Activity:
         self.duration = random.randint(min_duration, max_duration)
 
     def perform(self, visitor_id):
-        print(f"Visitor {visitor_id} is {self.name} for {self.duration} seconds")
+        log(f"Visitor {visitor_id} is {self.name} for {self.duration} seconds")
         time.sleep(self.duration)
-        print(f"Visitor {visitor_id} finished {self.name}.")
+        log(f"Visitor {visitor_id} finished {self.name}.")

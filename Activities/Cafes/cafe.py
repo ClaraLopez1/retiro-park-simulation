@@ -2,6 +2,7 @@ import threading
 import time
 import random
 from queue import Queue
+from logger import log
 
 
 class Barista(threading.Thread):
@@ -14,10 +15,9 @@ class Barista(threading.Thread):
         while True:
             visitor_id, done_event = self.cafe.queue.get()
             prep_time = random.randint(3, 7)
-            print(
-                f"[{self.cafe.name}] Barista {self.barista_id} is preparing coffee for Visitor {visitor_id} ({prep_time} seconds)")
+            log(f"[{self.cafe.name}] Barista {self.barista_id} is preparing coffee for Visitor {visitor_id} ({prep_time} seconds)")
             time.sleep(prep_time)
-            print(f"[{self.cafe.name}] Barista {self.barista_id} finished serving Visitor {visitor_id}")
+            log(f"[{self.cafe.name}] Barista {self.barista_id} finished serving Visitor {visitor_id}")
             done_event.set()
             self.cafe.queue.task_done()
 
@@ -34,4 +34,4 @@ class Cafe:
         self.queue.put((visitor_id, done_event))
 
 
-#consider adding menu items with price
+#TODO:consider adding menu items with price

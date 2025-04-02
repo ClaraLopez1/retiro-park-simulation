@@ -3,6 +3,9 @@ import threading
 import time
 import random
 
+from logger import log
+
+
 class Boat:
     def __init__(self, boat_id):
         self.boat_id = boat_id
@@ -36,7 +39,7 @@ class BoatRental:
                         return boat
 
 
-                print(f"Visitor {visitor_id} is waiting for a boat.")
+                log(f"Visitor {visitor_id} is waiting for a boat.")
                 self.queue.put(visitor_id)
                 self.condition.wait()
 

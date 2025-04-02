@@ -1,15 +1,19 @@
+from park_map import ACTIVITY_COORDS, get_activity_coord
+from Activities.activity import Activity
+from logger import log
 import time
-from Activities import activity
-class RentBoat(activity.Activity):
+
+class RentBoat(Activity):
     def __init__(self, boat_rental):
         super().__init__("Renting a Boat", 10, 20)
         self.boat_rental = boat_rental
+        self.coords = get_activity_coord(self.name)
 
     def perform(self, visitor_id):
+        log(f"Visitor {visitor_id} is traveling to {self.coords} for {self.name}")
         boat = self.boat_rental.rent_boat(visitor_id)
-
         if boat:
-            print(f"Visitor {visitor_id} is using Boat {boat.boat_id}.")
+            log(f"Visitor {visitor_id} is using Boat {boat.boat_id}.")
             time.sleep(self.duration)
             self.boat_rental.return_boat(boat)
-            print(f"Visitor {visitor_id} finished kayaking.")
+            log(f"Visitor {visitor_id} finished kayaking.")
