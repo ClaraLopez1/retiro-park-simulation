@@ -1,6 +1,5 @@
 import tkinter as tk
-from PIL import Image, ImageTk  # Pillow is needed for JPG images
-import threading
+from PIL import Image, ImageTk
 
 class ParkGUI:
     def __init__(self, master, visitor_threads):
