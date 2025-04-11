@@ -1,8 +1,7 @@
 import tkinter as tk
 from PIL import Image, ImageTk  # Pillow is needed for JPG images
 import threading
-from datetime import datetime
-
+from time_manager import TimeManager
 class ParkGUI:
     def __init__(self, master, visitor_threads, time_manager):
         self.master = master
