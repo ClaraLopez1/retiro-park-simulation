@@ -205,17 +205,17 @@ if __name__ == "__main__":
         WatchingPerformance(),
         TakingPhotos(),
         Running(),
-        PalacioCristal(),
-        AngelCaido(),
-        PalacioVelazquez(),
-        RentBoat(boat_rental),
-        RentBike(bike_rental),
-        VisitCafe(star_cafe),
-        VisitCafe(retiro_bistro),
-        football7v7,
-        # football13v13,
-        padel,
-        tennis
+        # PalacioCristal(),
+        # AngelCaido(),
+        # PalacioVelazquez(),
+        # RentBoat(boat_rental),
+        # RentBike(bike_rental),
+        # VisitCafe(star_cafe),
+        # VisitCafe(retiro_bistro),
+        # football7v7,
+        # # football13v13,
+        # padel,
+        # tennis
     ]
 
     visitors = [Visitor(i, park_activities, time_manager) for i in range(50)]
