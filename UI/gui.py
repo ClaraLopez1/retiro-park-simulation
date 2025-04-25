@@ -6,7 +6,7 @@ class ParkGUI:
         self.master = master
 
         # Load the JPG image using PIL
-        pil_image = Image.open("retiro.jpg")  # Replace with your JPG filename
+        pil_image = Image.open("UI/retiro.jpg")
         self.bg_image = ImageTk.PhotoImage(pil_image)
 
         # Set the canvas size to match the image dimensions

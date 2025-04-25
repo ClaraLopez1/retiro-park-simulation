@@ -1,9 +1,7 @@
 import queue
 import threading
-import time
-import random
 
-from logger import log
+from Utils.logger import log
 
 
 class Bike:

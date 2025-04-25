@@ -1,7 +1,7 @@
 import time
 from Activities import activity
-from logger import log
-from park_map import ACTIVITY_COORDS, get_activity_coord
+from Utils.logger import log
+from UI.park_map import get_activity_coord
 
 
 class RentBike(activity.Activity):

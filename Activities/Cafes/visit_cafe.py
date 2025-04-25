@@ -1,8 +1,7 @@
-import time
 from Activities.activity import Activity
 import threading
-from logger import log
-from park_map import ACTIVITY_COORDS, get_activity_coord
+from Utils.logger import log
+from UI.park_map import get_activity_coord
 
 
 class VisitCafe(Activity):

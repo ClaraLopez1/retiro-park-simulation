@@ -1,22 +1,18 @@
-import random
-import threading
 from Activities.Cafes.cafe import Cafe
 from Activities.Cafes.visit_cafe import VisitCafe
 from Activities.Renting.Resources.bikes import BikeRental
 from Activities.Renting.Resources.boats import BoatRental
-from Activities.Sports.sports_activities import SportActivity, SportCourt
-from Activities.activity import Activity
-from Activities.Renting.rent_boat import RentBoat
 from Activities.Renting.rent_bike import RentBike
+from Activities.Renting.rent_boat import RentBoat
+from Activities.Sports.sports_activities import SportActivity, SportCourt
 from Activities.simple_activities import Walking, WatchingPerformance, TakingPhotos, Running, PalacioCristal, \
     AngelCaido, PalacioVelazquez
-from logger import log
-from gui import start_gui
+from UI.gui import start_gui
 import random
 import threading
 import time
-from logger import log
-from park_map import get_activity_coord
+from Utils.logger import log
+from UI.park_map import get_activity_coord
 
 
 class Visitor(threading.Thread):

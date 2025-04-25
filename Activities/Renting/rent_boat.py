@@ -1,6 +1,6 @@
-from park_map import ACTIVITY_COORDS, get_activity_coord
+from UI.park_map import get_activity_coord
 from Activities.activity import Activity
-from logger import log
+from Utils.logger import log
 import time
 
 class RentBoat(Activity):

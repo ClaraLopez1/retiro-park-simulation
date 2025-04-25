@@ -1,5 +1,5 @@
 from Activities.activity import Activity as activity
-from park_map import ACTIVITY_COORDS, get_activity_coord
+from UI.park_map import get_activity_coord
 
 
 class Walking(activity):

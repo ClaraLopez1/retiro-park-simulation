@@ -2,7 +2,7 @@ import threading
 import time
 import random
 from queue import Queue
-from logger import log
+from Utils.logger import log
 
 
 class Barista(threading.Thread):

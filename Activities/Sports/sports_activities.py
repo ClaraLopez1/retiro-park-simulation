@@ -2,8 +2,8 @@ import threading
 import time
 import random
 from Activities.activity import Activity
-from logger import log
-from park_map import get_activity_coord
+from Utils.logger import log
+from UI.park_map import get_activity_coord
 from queue import Queue
 
 
