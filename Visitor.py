@@ -1,5 +1,7 @@
 import random
 import threading
+from datetime import datetime
+
 from Activities.Cafes.cafe import Cafe
 from Activities.Cafes.visit_cafe import VisitCafe
 from Activities.Renting.Resources.bikes import BikeRental
@@ -15,6 +17,7 @@ import threading
 import time
 from Utils.logger import log
 from UI.park_map import get_activity_coord
+from time_manager import TimeManager
 
 
 class Visitor(threading.Thread):
@@ -192,7 +195,6 @@ if __name__ == "__main__":
     star_cafe = Cafe("StarCafe", num_baristas=2)
     retiro_bistro = Cafe("RetiroBistro", num_baristas=3)
     football7v7 = SportActivity("Football 7v7", 14, SportCourt("Football 7v7"), min_duration=10, max_duration=20)
-    # football13v13 = SportActivity("Football 13v13", 26, min_duration=15, max_duration=30)
     padel = SportActivity("Padel", 4, SportCourt("Padel"), min_duration=5, max_duration=10)
     tennis = SportActivity("Tennis", 2, SportCourt("Tennis"), min_duration=3, max_duration=7)
 
@@ -201,17 +203,16 @@ if __name__ == "__main__":
         WatchingPerformance(),
         TakingPhotos(),
         Running(),
-        # PalacioCristal(),
-        # AngelCaido(),
-        # PalacioVelazquez(),
-        # RentBoat(boat_rental),
-        # RentBike(bike_rental),
-        # VisitCafe(star_cafe),
-        # VisitCafe(retiro_bistro),
-        # football7v7,
-        # # football13v13,
-        # padel,
-        # tennis
+        PalacioCristal(),
+        AngelCaido(),
+        PalacioVelazquez(),
+        RentBoat(boat_rental),
+        RentBike(bike_rental),
+        VisitCafe(star_cafe),
+        VisitCafe(retiro_bistro),
+        football7v7,
+        padel,
+        tennis
     ]
 
     visitors = [Visitor(i, park_activities, time_manager) for i in range(50)]
