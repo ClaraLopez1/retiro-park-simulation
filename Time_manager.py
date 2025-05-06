@@ -53,9 +53,11 @@ class TimeManager(threading.Thread):
 
     def get_time_of_day(self):
         hour = self.current_time.hour
-        if 6 <= hour < 12:
-            return "morning"
-        elif 12 <= hour < 17:
+        if 6 <= hour < 9:
+            return "early_morning"
+        elif 9 <= hour < 13:
+            return "midday"
+        elif 13 <= hour < 17:
             return "afternoon"
         elif 17 <= hour < 22:
             return "evening"
