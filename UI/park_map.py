@@ -1,12 +1,5 @@
 import random
 
-# New mapping: specific coordinates for each activity
-ACTIVITY_COORDS = {
-    "Visiting StarCafe": (410, 190),
-    "Visiting RetiroBistro": (180, 330),
-    "Angel Caido": (1050, 600),
-}
-
 ALLOWED_BOUNDS = {
     "Renting a Boat": {"x": (360, 630), "y": (450, 590)},
     "Football 7v7": {"x": (875, 975), "y": (630, 670)},
@@ -15,6 +8,9 @@ ALLOWED_BOUNDS = {
     "Palacio de Cristal": {"x": (860, 990), "y": (410, 470)},
     "Palacio de Velazquez": {"x": (670, 810), "y": (320, 380)},
     "Renting a Bike": {"x": (900, 930), "y": (300, 330)},
+    "Visiting StarCafe": {"x": (400, 420), "y": (180, 200)},
+    "Visiting RetiroBistro": {"x": (170, 190), "y": (320, 340)},
+    "Angel Caido": {"x": (1040, 1060), "y": (590, 610)},
 }
 
 def is_inside_bounds(x, y, bounds):
@@ -53,7 +49,7 @@ def get_activity_coord(activity_name):
         y_min, y_max = ALLOWED_BOUNDS[activity_name]["y"]
         return (random.randint(x_min, x_max), random.randint(y_min, y_max))
 
-    return ACTIVITY_COORDS.get(activity_name, (10, 10))
+    return (700, 500)  # fallback
 
 
 

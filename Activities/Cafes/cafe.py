@@ -2,6 +2,8 @@ import threading
 import time
 import random
 from queue import Queue
+
+from Activities.Cafes.Menu.MenuItem import MenuItem
 from Utils.logger import log
 
 
@@ -23,15 +25,22 @@ class Barista(threading.Thread):
 
 
 class Cafe:
-    def __init__(self, name, num_baristas):
+    def __init__(self, name, num_baristas, menu_items=None):
         self.name = name
         self.queue = Queue()
         self.baristas = [Barista(i, self) for i in range(num_baristas)]
         for barista in self.baristas:
             barista.start()
+        self.menu = menu_items or self._default_menu()
+
+    def _default_menu(self):
+        return [
+            MenuItem("Café con leche", 2.50, "Café con leche caliente"),
+            MenuItem("Medialuna", 1.20, "Clásica medialuna de manteca"),
+            MenuItem("Tostado", 3.00, "Tostado de jamón y queso"),
+        ]
 
     def enqueue_visitor(self, visitor_id, done_event):
         self.queue.put((visitor_id, done_event))
 
 
-#TODO:consider adding menu items with price
