@@ -47,3 +47,7 @@ class BoatRental:
 
             if not self.queue.empty():
                 self.condition.notify()
+
+    def notify_closure(self):
+        with self.condition:
+            self.condition.notify_all()

@@ -22,7 +22,6 @@ class Visitor(threading.Thread):
         if event == "open":
             self.running = True
         elif event == "close":
-            log(f"Visitor {self.visitor_id} is leaving the park.")
             self.running = False
 
     def smooth_move(self, start_coords, end_coords, steps=20, step_delay=0.05):
@@ -38,12 +37,19 @@ class Visitor(threading.Thread):
         while True:
             if not self.running:
                 self.smooth_move(self.coords, (10, 10))
-                continue
+                log(f"Visitor {self.visitor_id} is starting: leaving.")
+                break
 
             activity = random.choice(self.park_activities)
             target_coords = get_activity_coord(activity.name)
             if self.coords != target_coords:
                 log(f"Visitor {self.visitor_id} moving from {self.coords} to {target_coords} for {activity.name}")
                 self.smooth_move(self.coords, target_coords)
+
+            if not self.running:
+                log(f"Visitor {self.visitor_id} stopped before starting {activity.name}")
+                continue
+
             log(f"Visitor {self.visitor_id} is starting: {activity.name} at {self.coords}")
             activity.perform(self.visitor_id)
+

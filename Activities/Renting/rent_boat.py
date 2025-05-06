@@ -5,7 +5,7 @@ import time
 
 class RentBoat(Activity):
     def __init__(self, boat_rental):
-        super().__init__("Renting a Boat", 10, 20)
+        super().__init__("Renting a Boat", 2, 10)
         self.boat_rental = boat_rental
         self.coords = get_activity_coord(self.name)
 

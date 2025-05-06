@@ -27,7 +27,6 @@ class BikeRental:
         self.queue = queue.Queue()
         self.lock = threading.Lock()
         self.condition = threading.Condition(self.lock) #Allows threads to wait or be notified when resources are available
-        #TODO: define if visitors wait or continue with other activities
 
     def rent_bike(self, visitor_id):
         with self.condition:
@@ -46,3 +45,7 @@ class BikeRental:
 
             if not self.queue.empty():
                 self.condition.notify()
+
+    def notify_closure(self):
+        with self.condition:
+            self.condition.notify_all()

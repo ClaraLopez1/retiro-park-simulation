@@ -6,7 +6,7 @@ from UI.park_map import get_activity_coord
 
 class RentBike(activity.Activity):
     def __init__(self, bike_rental):
-        super().__init__("Renting a Bike", 5, 15)
+        super().__init__("Renting a Bike", 5, 10)
         self.bike_rental = bike_rental
         self.coords = get_activity_coord(self.name)
 

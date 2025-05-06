@@ -11,6 +11,7 @@ from Activities.Sports.sports_activities import SportActivity, SportCourt
 from Activities.simple_activities import Walking, WatchingPerformance, TakingPhotos, Running, PalacioCristal, \
     AngelCaido, PalacioVelazquez
 from Time_manager import TimeManager
+from Utils.logger import log
 from Visitor import Visitor
 
 
@@ -20,6 +21,8 @@ class RetiroPark:
         self.time_manager = TimeManager(
             time_scale=0.2,
         )
+        self.time_manager.register_listener(self.handle_time_event)
+
         self.visitors = [Visitor(i, self.activities) for i in range(num_visitors)]
 
         for visitor in self.visitors:
@@ -44,6 +47,12 @@ class RetiroPark:
         star_cafe = Cafe("StarCafe", num_baristas=10, menu_items=menu_star)
         retiro_bistro = Cafe("RetiroBistro", num_baristas=3, menu_items=menu_bistro)
 
+        football = SportActivity("Football 7v7", 14, SportCourt("Football 7v7"), min_duration=5, max_duration=10)
+        padel = SportActivity("Padel", 4, SportCourt("Padel"), min_duration=2, max_duration=5)
+        tennis = SportActivity("Tennis", 2, SportCourt("Tennis"), min_duration=3, max_duration=7)
+
+        self.sport_activities = [football, padel, tennis]
+
         return [
             Walking(),
             WatchingPerformance(),
@@ -56,10 +65,33 @@ class RetiroPark:
             RentBike(bike_rental),
             VisitCafe(star_cafe),
             VisitCafe(retiro_bistro),
-            SportActivity("Football 7v7", 14, SportCourt("Football 7v7"), min_duration=10, max_duration=20),
-            SportActivity("Padel", 4, SportCourt("Padel"), min_duration=5, max_duration=10),
-            SportActivity("Tennis", 2, SportCourt("Tennis"), min_duration=3, max_duration=7),
+            football, padel, tennis
         ]
+
+    def handle_time_event(self, event):
+        if event == "closing sport activities":
+            self.close_sports()
+
+        if event == "close":
+            for activity in self.activities:
+                if isinstance(activity, SportActivity):
+                    with activity.condition:
+                        activity.condition.notify_all()
+                elif isinstance(activity, RentBike):
+                    activity.bike_rental.notify_closure()
+                elif isinstance(activity, RentBoat):
+                    activity.boat_rental.notify_closure()
+
+
+    def close_sports(self):
+        for sport in self.sport_activities:
+            log(f"Closing down {sport.name}")
+            with sport.condition:
+                sport.close()
+            if sport in self.activities:
+                self.activities.remove(sport)
+        for visitor in self.visitors:
+            visitor.park_activities = [a for a in visitor.park_activities if not isinstance(a, SportActivity)]
 
     def start(self):
         self.time_manager.start()
@@ -68,6 +100,7 @@ class RetiroPark:
         start_gui(self.visitors, self.time_manager)
 
 
+
 if __name__ == "__main__":
-    park = RetiroPark(num_visitors=50)
+    park = RetiroPark(num_visitors=100)
     park.start()
