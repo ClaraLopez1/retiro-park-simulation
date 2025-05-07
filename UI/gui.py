@@ -24,10 +24,32 @@ class ParkGUI:
         # Draw the background image at the top-left corner
         self.canvas.create_image(0, 0, anchor="nw", image=self.bg_image)
 
-        self.time_label = tk.Label(master, font=("Arial", 14), bg="white")
-        self.time_label.place(x=10, y=10)
-        self.day_label = tk.Label(master, font=("Arial", 12), bg="white", fg="blue")
-        self.day_label.place(x=10, y=40)
+        time_frame = tk.Frame(master, bg="white", bd=2, relief="ridge")
+        time_frame.place(x=self.width - 160, y=10)
+
+        # Día
+        self.day_label = tk.Label(
+            time_frame,
+            text="",
+            font=("Helvetica", 11, "bold"),
+            bg="white",
+            fg="#2E8B57",  # SeaGreen
+            justify="center",
+            anchor="center"
+        )
+        self.day_label.pack(padx=10, pady=(5, 0))
+
+        # Hora
+        self.time_label = tk.Label(
+            time_frame,
+            text="",
+            font=("Helvetica", 13, "bold"),
+            bg="white",
+            fg="#006400",  # DarkGreen
+            justify="center",
+            anchor="center"
+        )
+        self.time_label.pack(padx=10, pady=(0, 5))
 
         self.visitor_threads = visitor_threads
 
@@ -51,9 +73,8 @@ class ParkGUI:
                 self.canvas.coords(self.visitor_items[vid], x - 5, y - 5, x + 5, y + 5)
         # Schedule the next update after 100 milliseconds
         self.master.after(100, self.update_gui)
-        self.time_label.config(text=f"Time: {self.time_manager.get_current_time()}")
-        self.day_label.config(text=f"Day: {self.time_manager.get_current_day()}")
-
+        self.time_label.config(text=self.time_manager.get_current_time())
+        self.day_label.config(text=self.time_manager.get_current_day())
 
 def start_gui(visitor_threads, time_manager):
     root = tk.Tk()

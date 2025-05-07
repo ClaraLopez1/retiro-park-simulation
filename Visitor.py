@@ -57,42 +57,42 @@ class Visitor(threading.Thread):
         # Set preference weights based on time of day
         if time_of_day == "early_morning":
             weights = {
-                "walking": 0,  # Highest preference for walking/running in early morning
-                "cafe": 1,  # Low preference for cafes in early morning
-                "cultural": 0,  # Low preference for cultural activities
-                "sport": 0,  # Low preference for sports in early morning
-                "rental": 0  # Low preference for rentals in early morning
+                "walking": 0.4,  # Highest preference for walking/running in early morning
+                "cafe": 0.1,  # Low preference for cafes in early morning
+                "cultural": 0.3,  # Low preference for cultural activities
+                "sport": 0.1,  # Low preference for sports in early morning
+                "rental": 0.1  # Low preference for rentals in early morning
             }
         elif time_of_day == "midday":
             weights = {
                 "walking": 0.2,  # Medium preference for walking at midday
                 "cafe": 0.3,  # Medium-low preference for cafes at midday
-                "cultural": 0.4,  # High preference for cultural visits at midday
+                "cultural": 0.2,  # High preference for cultural visits at midday
                 "sport": 0.05,  # Very low preference for sports at midday (too hot)
-                "rental": 0.05  # Very low preference for rentals at midday (too hot)
+                "rental": 0.25  # Very low preference for rentals at midday (too hot)
             }
         elif time_of_day == "afternoon":
             weights = {
-                "walking": 0.05,  # Very low preference for walking in the afternoon (too hot)
-                "cafe": 0.35,  # High preference for cafes in the afternoon
+                "walking": 0.1,  # Very low preference for walking in the afternoon (too hot)
+                "cafe": 0.2,  # High preference for cafes in the afternoon
                 "cultural": 0.25,  # High preference for cultural visits
                 "sport": 0.25,  # Medium-low preference for sports in the afternoon
-                "rental": 0.1  # Low preference for rentals in the afternoon
+                "rental": 0.2  # Low preference for rentals in the afternoon
             }
         elif time_of_day == "evening":
             weights = {
                 "walking": 0.4,  # Medium preference for walking in the evening (cooler)
                 "cafe": 0.1,  # Low preference for cafes in the evening
-                "cultural": 0.3,  # Low preference for cultural activities in the evening
-                "sport": 0.1,  # High preference for sports in the evening
+                "cultural": 0.39,  # Low preference for cultural activities in the evening
+                "sport": 0.01,  # High preference for sports in the evening
                 "rental": 0.1  # High preference for boating/biking in the evening
             }
         else:  # night or unexpected value - use equal weights
             weights = {
-                "walking": 0.2,
+                "walking": 0.4,
                 "cafe": 0.2,
                 "cultural": 0.2,
-                "sport": 0.2,
+                "sport": 0.0,
                 "rental": 0.2
             }
 

@@ -64,10 +64,3 @@ class SportActivity(Activity):
             with self.condition:
                 while self.game_in_progress:
                     self.condition.wait()
-
-    def close(self):
-        with self.condition:
-            self.game_in_progress = False
-            self.waiting_queue.queue.clear()
-            self.condition.notify_all()
-            log(f"Game of {self.name} closed. All players notified.")

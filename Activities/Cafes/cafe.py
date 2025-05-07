@@ -16,8 +16,7 @@ class Barista(threading.Thread):
     def run(self):
         while True:
             visitor_id, done_event = self.cafe.queue.get()
-            prep_time = random.randint(3, 7)
-            log(f"[{self.cafe.name}] Barista {self.barista_id} is preparing coffee for Visitor {visitor_id} ({prep_time} seconds)")
+            prep_time = random.randint(1, 3)
             time.sleep(prep_time)
             log(f"[{self.cafe.name}] Barista {self.barista_id} finished serving Visitor {visitor_id}")
             done_event.set()

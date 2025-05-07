@@ -26,9 +26,6 @@ class TimeManager(threading.Thread):
                 hour = self.current_time.hour
                 minute = self.current_time.minute
 
-                if hour == 20 and minute == 0:
-                    self._notify("closing sport activities")
-
                 if hour == 22 and minute == 0:
                     self.park_open = False
                     self._notify("close")

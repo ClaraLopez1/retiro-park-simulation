@@ -25,7 +25,7 @@ class Running(activity):
 
 class PalacioCristal(activity):
     def __init__(self):
-        super().__init__("Palacio de Cristal", 5, 15)
+        super().__init__("Palacio de Cristal", 5, 10)
         self.coords = get_activity_coord(self.name)
 
 class AngelCaido(activity):
@@ -35,5 +35,5 @@ class AngelCaido(activity):
 
 class PalacioVelazquez(activity):
     def __init__(self):
-        super().__init__("Palacio de Velazquez", 5, 15)
+        super().__init__("Palacio de Velazquez", 5, 10)
         self.coords = get_activity_coord(self.name)

@@ -11,7 +11,7 @@ from Activities.Sports.sports_activities import SportActivity, SportCourt
 from Activities.simple_activities import Walking, WatchingPerformance, TakingPhotos, Running, PalacioCristal, \
     AngelCaido, PalacioVelazquez
 from Time_manager import TimeManager
-from Utils.logger import log
+from Utils.logger import log, set_time_manager
 from Visitor import Visitor
 
 
@@ -24,6 +24,7 @@ class RetiroPark:
         self.time_manager.register_listener(self.handle_time_event)
 
         self.visitors = [Visitor(i, self.activities) for i in range(num_visitors)]
+        set_time_manager(self.time_manager)
 
         for visitor in self.visitors:
             visitor.set_time_manager(self.time_manager)
@@ -69,9 +70,6 @@ class RetiroPark:
         ]
 
     def handle_time_event(self, event):
-        if event == "closing sport activities":
-            self.close_sports()
-
         if event == "close":
             for activity in self.activities:
                 if isinstance(activity, SportActivity):
@@ -82,16 +80,6 @@ class RetiroPark:
                 elif isinstance(activity, RentBoat):
                     activity.boat_rental.notify_closure()
 
-
-    def close_sports(self):
-        for sport in self.sport_activities:
-            log(f"Closing down {sport.name}")
-            with sport.condition:
-                sport.close()
-            if sport in self.activities:
-                self.activities.remove(sport)
-        for visitor in self.visitors:
-            visitor.park_activities = [a for a in visitor.park_activities if not isinstance(a, SportActivity)]
 
     def start(self):
         self.time_manager.start()
