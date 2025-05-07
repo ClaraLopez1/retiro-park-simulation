@@ -6,6 +6,38 @@ from Utils.logger import log
 
 
 class Visitor(threading.Thread):
+    # Define personas, values above 1.0 indicate interest and values below 1.0 indicate decreased interest.
+    PERSONAS = {
+       "Cultural": {
+           "cultural": 2.0, 
+           "walking": 1.2,
+           "cafe": 1.5,   
+           "sport": 0.3,
+           "rental": 0.7
+       },
+       "Sporty": {
+           "cultural": 0.5,
+           "walking": 1.0,
+           "cafe": 0.7,
+           "sport": 2.0,
+           "rental": 1.5
+       },
+       "Relaxed": {
+           "cultural": 1.2,
+           "walking": 1.5,
+           "cafe": 1.8,
+           "sport": 0.2,
+           "rental": 1.0
+       },
+       "Explorer": {
+           "cultural": 1.3,
+           "walking": 1.7,
+           "cafe": 0.8,
+           "sport": 0.6,
+           "rental": 1.8
+       }
+   }
+
     def __init__(self, visitor_id, park_activities):
         super().__init__()
         self.visitor_id = visitor_id
@@ -13,6 +45,11 @@ class Visitor(threading.Thread):
         self.coords = (10, 10)
         self.running = False
         self.time_manager = None
+        
+        # Assign a random persona
+        self.persona_name = random.choice(list(self.PERSONAS.keys()))
+        self.persona_preferences = self.PERSONAS[self.persona_name]
+        log(f"Visitor {self.visitor_id} has persona: {self.persona_name}")
 
     def set_time_manager(self, time_manager):
         self.time_manager = time_manager
@@ -35,12 +72,11 @@ class Visitor(threading.Thread):
 
     def choose_activity(self):
         """
-        Choose an activity based on time of day.
-        Early Morning (6-9): Prefer walking, running
-        Midday (9-13): Prefer cultural visits, taking photos
-        Afternoon (13-17): Prefer cafes, cultural visits
-        Evening (17-22): Prefer sports, boat/bike rentals
+        Choose an activity based on time of day and persona preferences.
         """
+        TIME_INFLUENCE = 0.75    # 75% influence
+        PERSONA_INFLUENCE = 0.25 # 25% influence
+        
         time_of_day = self.time_manager.get_time_of_day()
         current_time = self.time_manager.get_current_time()
 
@@ -54,77 +90,90 @@ class Visitor(threading.Thread):
                             "Tennis" in act.name or "Football" in act.name or "Padel" in act.name]
         rental_activities = [act for act in self.park_activities if "Renting" in act.name]
 
-        # Set preference weights based on time of day
+        # Set base weights based on time of day
         if time_of_day == "early_morning":
-            weights = {
-                "walking": 0.4,  # Highest preference for walking/running in early morning
-                "cafe": 0.1,  # Low preference for cafes in early morning
-                "cultural": 0.3,  # Low preference for cultural activities
-                "sport": 0.1,  # Low preference for sports in early morning
-                "rental": 0.1  # Low preference for rentals in early morning
+            time_weights = {
+                "walking": 0.4,
+                "cafe": 0.1,
+                "cultural": 0.3,
+                "sport": 0.1,
+                "rental": 0.1
             }
         elif time_of_day == "midday":
-            weights = {
-                "walking": 0.2,  # Medium preference for walking at midday
-                "cafe": 0.3,  # Medium-low preference for cafes at midday
-                "cultural": 0.2,  # High preference for cultural visits at midday
-                "sport": 0.05,  # Very low preference for sports at midday (too hot)
-                "rental": 0.25  # Very low preference for rentals at midday (too hot)
+            time_weights = {
+                "walking": 0.2,
+                "cafe": 0.3,
+                "cultural": 0.2,
+                "sport": 0.05,
+                "rental": 0.25
             }
         elif time_of_day == "afternoon":
-            weights = {
-                "walking": 0.1,  # Very low preference for walking in the afternoon (too hot)
-                "cafe": 0.2,  # High preference for cafes in the afternoon
-                "cultural": 0.25,  # High preference for cultural visits
-                "sport": 0.25,  # Medium-low preference for sports in the afternoon
-                "rental": 0.2  # Low preference for rentals in the afternoon
+            time_weights = {
+                "walking": 0.1,
+                "cafe": 0.2,
+                "cultural": 0.25,
+                "sport": 0.25,
+                "rental": 0.2
             }
         elif time_of_day == "evening":
-            weights = {
-                "walking": 0.4,  # Medium preference for walking in the evening (cooler)
-                "cafe": 0.1,  # Low preference for cafes in the evening
-                "cultural": 0.39,  # Low preference for cultural activities in the evening
-                "sport": 0.01,  # High preference for sports in the evening
-                "rental": 0.1  # High preference for boating/biking in the evening
+            time_weights = {
+                "walking": 0.4,
+                "cafe": 0.1,
+                "cultural": 0.39,
+                "sport": 0.01,
+                "rental": 0.1
             }
-        else:  # night or unexpected value - use equal weights
-            weights = {
+        else:  # night or unexpected value
+            time_weights = {
                 "walking": 0.4,
                 "cafe": 0.2,
                 "cultural": 0.2,
                 "sport": 0.0,
                 "rental": 0.2
             }
-
-        # Create a weighted list of all activities
+        
+        # Calculate combined weights using weighted average and normalize
+        combined_weights = {}
+        for category in time_weights:
+            # Get persona preference (default to 1.0 if not specified)
+            persona_preference = self.persona_preferences.get(category, 1.0)
+            
+            # Calculate weighted average, normalizing persona preferences
+            combined_weights[category] = (time_weights[category] * TIME_INFLUENCE) + \
+                                        (persona_preference * PERSONA_INFLUENCE / 2.0)
+        
+        # Normalize weights to sum to 1.0
+        weight_sum = sum(combined_weights.values())
+        if weight_sum > 0:  # Avoid division by zero
+            for category in combined_weights:
+                combined_weights[category] /= weight_sum
+        
+        # Create weighted list of activities using combined weights
         all_activities = []
-        all_activities.extend([(act, weights["walking"]) for act in walking_activities])
-        all_activities.extend([(act, weights["cafe"]) for act in cafe_activities])
-        all_activities.extend([(act, weights["cultural"]) for act in cultural_activities])
-        all_activities.extend([(act, weights["sport"]) for act in sport_activities])
-        all_activities.extend([(act, weights["rental"]) for act in rental_activities])
+        all_activities.extend([(act, combined_weights["walking"]) for act in walking_activities])
+        all_activities.extend([(act, combined_weights["cafe"]) for act in cafe_activities])
+        all_activities.extend([(act, combined_weights["cultural"]) for act in cultural_activities])
+        all_activities.extend([(act, combined_weights["sport"]) for act in sport_activities])
+        all_activities.extend([(act, combined_weights["rental"]) for act in rental_activities])
 
-        # Handle any activities that didn't fit into our categories
+        # Handle uncategorized activities
         uncategorized = [act for act in self.park_activities if act not in
-                         [a for a_list in [walking_activities, cafe_activities, cultural_activities,
-                                           sport_activities, rental_activities] for a in a_list]]
-        all_activities.extend([(act, 0.2) for act in uncategorized])  # Give uncategorized activities a medium weight
-
+                        [a for a_list in [walking_activities, cafe_activities, cultural_activities,
+                                          sport_activities, rental_activities] for a in a_list]]
+        all_activities.extend([(act, 0.2) for act in uncategorized])
+        
         # Select an activity based on weights
         activities, weights = zip(*all_activities) if all_activities else (self.park_activities, None)
-
-        # If we have weights, use them for selection
+        
         if weights and any(w > 0 for w in weights):
             selected_activity = random.choices(activities, weights=weights, k=1)[0]
         else:
-            # Fallback to random choice if we have no valid weights
             selected_activity = random.choice(self.park_activities)
-
-        # Log the selection with time information
-        log(f"Visitor {self.visitor_id} at time {current_time} ({time_of_day}) selected activity: {selected_activity.name}")
-
+        
+        # Log including persona information
+        log(f"Visitor {self.visitor_id} ({self.persona_name}) at time {current_time} ({time_of_day}) selected activity: {selected_activity.name}")
+        
         return selected_activity
-
 
     def run(self):
         while True:
