@@ -5,7 +5,7 @@ from Activities.activity import Activity
 from Utils.logger import log
 from UI.park_map import get_activity_coord
 from queue import Queue
-
+from Utils.database import log_sport_game
 
 class SportCourt:
     def __init__(self, sport_type):
@@ -59,6 +59,7 @@ class SportActivity(Activity):
                 self.game_in_progress = False
                 self.condition.notify_all()
             self.court.lock.release()
+            log_sport_game(self.name, game_duration, self.last_players)
             log(f"Court lock released for {self.name}.")
         else:
             with self.condition:

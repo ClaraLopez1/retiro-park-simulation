@@ -1,7 +1,9 @@
 import random
+import sqlite3
 import threading
 import time
 from UI.park_map import get_activity_coord
+from Utils.database import log_entry, log_exit, log_activity
 from Utils.logger import log
 
 
@@ -11,6 +13,7 @@ class Visitor(threading.Thread):
         self.visitor_id = visitor_id
         self.park_activities = park_activities
         self.coords = (10, 10)
+        self.entered = False
         self.running = False
         self.time_manager = None
 
@@ -21,6 +24,9 @@ class Visitor(threading.Thread):
     def handle_time_event(self, event):
         if event == "open":
             self.running = True
+            self.entered = True
+            current_time = self.time_manager.get_current_time()
+            log_entry(self.visitor_id, current_time)
         elif event == "close":
             self.running = False
 
@@ -122,14 +128,19 @@ class Visitor(threading.Thread):
 
         # Log the selection with time information
         log(f"Visitor {self.visitor_id} at time {current_time} ({time_of_day}) selected activity: {selected_activity.name}")
-
+        log_activity(self.visitor_id, selected_activity.name, current_time)
         return selected_activity
 
 
     def run(self):
+        while not self.entered:
+            time.sleep(0.01)
+
         while True:
             if not self.running:
                 self.smooth_move(self.coords, (10, 10))
+                current_time = self.time_manager.get_current_time()
+                log_exit(self.visitor_id, current_time)
                 log(f"Visitor {self.visitor_id} is starting: leaving.")
                 break
 
@@ -140,7 +151,6 @@ class Visitor(threading.Thread):
                 self.smooth_move(self.coords, target_coords)
 
             if not self.running:
-                log(f"Visitor {self.visitor_id} stopped before starting {activity.name}")
                 continue
 
             log(f"Visitor {self.visitor_id} is starting: {activity.name} at {self.coords}")

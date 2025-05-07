@@ -1,3 +1,4 @@
+import sqlite3
 from datetime import datetime
 from UI.gui import start_gui
 from Activities.Cafes.Menu.MenuItem import MenuItem
@@ -13,10 +14,12 @@ from Activities.simple_activities import Walking, WatchingPerformance, TakingPho
 from Time_manager import TimeManager
 from Utils.logger import log, set_time_manager
 from Visitor import Visitor
+from Utils.database import init_db
 
 
 class RetiroPark:
     def __init__(self, num_visitors):
+        init_db()
         self.activities = self._create_activities()
         self.time_manager = TimeManager(
             time_scale=0.2,
@@ -50,7 +53,7 @@ class RetiroPark:
 
         football = SportActivity("Football 7v7", 14, SportCourt("Football 7v7"), min_duration=5, max_duration=10)
         padel = SportActivity("Padel", 4, SportCourt("Padel"), min_duration=2, max_duration=5)
-        tennis = SportActivity("Tennis", 2, SportCourt("Tennis"), min_duration=3, max_duration=7)
+        tennis = SportActivity("Tennis", 2, SportCourt("Tennis"), min_duration=3, max_duration=5)
 
         self.sport_activities = [football, padel, tennis]
 

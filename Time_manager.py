@@ -2,6 +2,7 @@ import threading
 import time
 from datetime import datetime, timedelta
 import random
+from Utils.logger import log
 
 class TimeManager(threading.Thread):
     WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -27,12 +28,12 @@ class TimeManager(threading.Thread):
                 minute = self.current_time.minute
 
                 if hour == 22 and minute == 0:
-                    self.park_open = False
                     self._notify("close")
-                    self.running = False  # End simulation
-                    break
+
 
             time.sleep(self.time_scale)
+
+        log("Park is closed. Simulation ended.")
 
     def _notify(self, event):
         for callback in self.listeners:

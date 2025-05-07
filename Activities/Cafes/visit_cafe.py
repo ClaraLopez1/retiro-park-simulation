@@ -3,6 +3,7 @@ from Activities.activity import Activity
 import threading
 from Utils.logger import log
 from UI.park_map import get_activity_coord
+from Utils.database import log_cafe_order
 
 
 class VisitCafe(Activity):
@@ -22,3 +23,4 @@ class VisitCafe(Activity):
         log(f"Visitor {visitor_id} is waiting for '{item.name}' at {self.cafe.name}")
         done_event.wait()
         log(f"Visitor {visitor_id} got their '{item.name}' and is leaving {self.cafe.name}\n")
+        log_cafe_order(visitor_id, self.cafe.name, item.name, item.price)
