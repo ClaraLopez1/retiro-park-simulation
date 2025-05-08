@@ -1,0 +1,11 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# IDEs
+.idea/
+*.iml
+
+# Databases
+*.db
