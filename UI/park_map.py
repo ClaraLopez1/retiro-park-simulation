@@ -1,16 +1,16 @@
 import random
 
 ALLOWED_BOUNDS = {
-    "Renting a Boat": {"x": (360, 630), "y": (450, 590)},
+    "renting a Boat": {"x": (360, 630), "y": (450, 590)},
     "Football 7v7": {"x": (875, 975), "y": (630, 670)},
     "Padel": {"x": (875, 935), "y": (685, 715)},
     "Tennis": {"x": (950, 975), "y": (685, 730)},
-    "Palacio de Cristal": {"x": (860, 990), "y": (410, 470)},
-    "Palacio de Velazquez": {"x": (670, 810), "y": (320, 380)},
-    "Renting a Bike": {"x": (900, 930), "y": (300, 330)},
-    "Visiting StarCafe": {"x": (400, 420), "y": (180, 200)},
-    "Visiting RetiroBistro": {"x": (170, 190), "y": (320, 340)},
-    "Angel Caido": {"x": (1040, 1060), "y": (590, 610)},
+    "🏛️ visiting Palacio de Cristal": {"x": (860, 990), "y": (410, 470)},
+    "🖼 visiting Palacio de Velazquez": {"x": (670, 810), "y": (320, 380)},
+    "renting a Bike": {"x": (900, 930), "y": (300, 330)},
+    "visiting StarCafe": {"x": (400, 420), "y": (180, 200)},
+    "visiting RetiroBistro": {"x": (170, 190), "y": (320, 340)},
+    "🗿 visiting Angel Caido": {"x": (1040, 1060), "y": (590, 610)},
 }
 
 def is_inside_bounds(x, y, bounds):
@@ -28,19 +28,19 @@ def get_safe_coord(area_bounds):
 
 
 def get_activity_coord(activity_name):
-    if activity_name == "Walking":
+    if activity_name == "🚶‍ walking":
         walking_bounds = {"x": (150, 1200), "y": (150, 850)}
         return get_safe_coord(walking_bounds)
 
-    if activity_name == "Watching a Street Performance":
+    if activity_name == "🎭 watching a Street Performance":
         street_bounds = {"x": (100, 600), "y": (200, 500)}
         return get_safe_coord(street_bounds)
 
-    if activity_name == "Taking Photos":
+    if activity_name == "📸 taking Photos":
         photo_bounds = {"x": (150, 900), "y": (150, 650)}
         return get_safe_coord(photo_bounds)
 
-    if activity_name == "Running":
+    if activity_name == "🏃 running":
         running_bounds = {"x": (300, 1100), "y": (700, 850)}
         return get_safe_coord(running_bounds)
 
