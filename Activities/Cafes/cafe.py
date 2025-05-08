@@ -1,26 +1,36 @@
 import threading
-from Utils.logger import log
-from Utils.resource_queue import ResourceQueue
+import time
+import random
+from queue import Queue
+
 from Activities.Cafes.Menu.MenuItem import MenuItem
+from Utils.logger import log
+
+
+class Barista(threading.Thread):
+    def __init__(self, barista_id, cafe):
+        super().__init__()
+        self.barista_id = barista_id
+        self.cafe = cafe
+
+    def run(self):
+        while True:
+            visitor_id, done_event = self.cafe.queue.get()
+            prep_time = random.randint(1, 3)
+            time.sleep(prep_time)
+            log(f"[{self.cafe.name}] Barista {self.barista_id} finished serving Visitor {visitor_id}")
+            done_event.set()
+            self.cafe.queue.task_done()
+
 
 class Cafe:
     def __init__(self, name, num_baristas, menu_items=None):
         self.name = name
-        self.menu_items = menu_items or self._default_menu()
-        
-        # Queue for barista service
-        self.service_queue = ResourceQueue(
-            resource_type="cafe",
-            resource_name=f"{name}_service",
-            capacity=num_baristas
-        )
-        
-        # Queue for seating
-        self.seating_queue = ResourceQueue(
-            resource_type="cafe",
-            resource_name=f"{name}_seating",
-            capacity=num_baristas * 3  # Assumption: 3 seats per barista
-        )
+        self.queue = Queue()
+        self.baristas = [Barista(i, self) for i in range(num_baristas)]
+        for barista in self.baristas:
+            barista.start()
+        self.menu = menu_items or self._default_menu()
 
     def _default_menu(self):
         return [
@@ -28,5 +38,8 @@ class Cafe:
             MenuItem("Medialuna", 1.20, "Clásica medialuna de manteca"),
             MenuItem("Tostado", 3.00, "Tostado de jamón y queso"),
         ]
+
+    def enqueue_visitor(self, visitor_id, done_event):
+        self.queue.put((visitor_id, done_event))
 
 

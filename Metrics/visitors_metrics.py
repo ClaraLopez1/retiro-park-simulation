@@ -88,27 +88,39 @@ def plot_average_stay_duration():
     df["exit_time"] = pd.to_datetime(df["exit_time"], format="%H:%M", errors="coerce")
     df = df[df["entry_time"].notnull() & df["exit_time"].notnull()]
 
-    # Convert to hours
-    df["stay_duration"] = (df["exit_time"] - df["entry_time"]).dt.total_seconds() / 3600  # in hours
+    # Calculate duration in hours
+    df["stay_duration"] = (df["exit_time"] - df["entry_time"]).dt.total_seconds() / 3600
+
+    # Define bins
+    bins = [0, 1, 2, 3, 4, 5, 6, 8, 10, 16, float("inf")]
+    labels = ["<1h", "1-2h", "2-3h", "3-4h", "4-5h", "5-6h", "6-8h", "8-10h", "10-16h", "16h+"]
+
+    df["duration_group"] = pd.cut(df["stay_duration"], bins=bins, labels=labels, right=False)
+
+    duration_counts = df["duration_group"].value_counts().sort_index()
 
     plt.figure(figsize=(10, 6))
-    plt.hist(df["stay_duration"], bins=20, color="skyblue", edgecolor="black")
-    plt.title("Visitor Stay Duration", fontsize=16, fontweight="bold")
-    plt.xlabel("Duration (hours)", fontsize=12)
+    bars = plt.bar(duration_counts.index, duration_counts.values, color="steelblue", edgecolor="black")
+
+    for bar, count in zip(bars, duration_counts.values):
+        plt.text(bar.get_x() + bar.get_width() / 2, count + 1, str(count),
+                 ha='center', va='bottom', fontsize=9)
+
+    plt.title("Visitor Stay Duration Distribution", fontsize=16, fontweight="bold")
+    plt.xlabel("Stay Duration", fontsize=12)
     plt.ylabel("Number of Visitors", fontsize=12)
-    plt.grid(axis='y', linestyle="--", alpha=0.6)
+    plt.grid(axis='y', linestyle='--', alpha=0.6)
     plt.tight_layout()
     plt.show()
 
-    # Format duration nicely
     def format_hours(h):
         whole = int(h)
         minutes = int((h - whole) * 60)
         return f"{whole}h {minutes}m" if whole > 0 else f"{minutes}m"
 
-    avg = df['stay_duration'].mean()
-    max_dur = df['stay_duration'].max()
-    min_dur = df['stay_duration'].min()
+    avg = df["stay_duration"].mean()
+    max_dur = df["stay_duration"].max()
+    min_dur = df["stay_duration"].min()
 
     print("🔎 Visitor Stay Duration Stats:")
     print(f"- Average stay: {format_hours(avg)}")
@@ -117,6 +129,77 @@ def plot_average_stay_duration():
 
 
 
+def plot_avg_stay_by_persona():
+    df = load_visitors()
+    if df.empty or "persona_name" not in df.columns:
+        print("No persona data found.")
+        return
+
+    df["entry_time"] = pd.to_datetime(df["entry_time"], format="%H:%M", errors="coerce")
+    df["exit_time"] = pd.to_datetime(df["exit_time"], format="%H:%M", errors="coerce")
+    df = df[df["entry_time"].notnull() & df["exit_time"].notnull()]
+
+    df["stay_duration"] = (df["exit_time"] - df["entry_time"]).dt.total_seconds() / 3600
+
+    persona_means = df.groupby("persona_name")["stay_duration"].mean().sort_values()
+
+    plt.figure(figsize=(8, 5))
+    bars = plt.bar(persona_means.index, persona_means.values, color="mediumseagreen", edgecolor="black")
+
+    for bar in bars:
+        height = bar.get_height()
+        plt.text(bar.get_x() + bar.get_width() / 2, height + 0.05,
+                 f"{height:.2f}h", ha='center', va='bottom', fontsize=10)
+
+    plt.title("Average Stay Duration by Persona", fontsize=14, fontweight="bold")
+    plt.xlabel("Persona", fontsize=12)
+    plt.ylabel("Average Duration (hours)", fontsize=12)
+    plt.ylim(0, max(persona_means.values) + 1)
+    plt.grid(axis='y', linestyle='--', alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+
+    print("🔎 Average Stay Duration by Persona:")
+    for persona, hours in persona_means.items():
+        whole = int(hours)
+        minutes = int((hours - whole) * 60)
+        print(f"- {persona}: {whole}h {minutes}m")
+
+def plot_entry_time_distribution():
+    df = load_visitors()
+    df["entry_time"] = pd.to_datetime(df["entry_time"], format="%H:%M", errors="coerce")
+    df = df[df["entry_time"].notnull()]
+    df["entry_hour"] = df["entry_time"].dt.hour
+
+    plt.figure(figsize=(10, 5))
+    plt.hist(df["entry_hour"], bins=range(6, 24), color="cornflowerblue", edgecolor="black", align="left")
+    plt.title("Entry Time Distribution", fontsize=14, fontweight="bold")
+    plt.xlabel("Hour of Entry")
+    plt.ylabel("Number of Visitors")
+    plt.xticks(range(6, 24))
+    plt.grid(axis="y", linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+
+def plot_exit_time_distribution():
+    df = load_visitors()
+    df["exit_time"] = pd.to_datetime(df["exit_time"], format="%H:%M", errors="coerce")
+    df = df[df["exit_time"].notnull()]
+    df["exit_hour"] = df["exit_time"].dt.hour
+
+    plt.figure(figsize=(10, 5))
+    plt.hist(df["exit_hour"], bins=range(6, 24), color="salmon", edgecolor="black", align="left")
+    plt.title("Exit Time Distribution", fontsize=14, fontweight="bold")
+    plt.xlabel("Hour of Exit")
+    plt.ylabel("Number of Visitors")
+    plt.xticks(range(6, 24))
+    plt.grid(axis="y", linestyle="--", alpha=0.5)
+    plt.tight_layout()
+    plt.show()
+
+
 if __name__ == "__main__":
     plot_exit_delay_after_closing()
     plot_average_stay_duration()
+    plot_avg_stay_by_persona()
+    plot_entry_time_distribution()

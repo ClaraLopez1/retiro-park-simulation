@@ -15,7 +15,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS visitors (
             id INTEGER PRIMARY KEY,
             entry_time TEXT,
-            exit_time TEXT
+            exit_time TEXT,
+            persona_name TEXT
         )
         """)
         # Tabla de actividades
@@ -53,10 +54,13 @@ def init_db():
         conn.commit()
 
 
-def log_entry(visitor_id, time_str):
+def log_entry(visitor_id, time_str,persona_name):
     with db_lock:
         with get_connection() as conn:
-            conn.execute("INSERT OR IGNORE INTO visitors (id, entry_time) VALUES (?, ?)", (visitor_id, time_str))
+            conn.execute("""
+                   INSERT OR IGNORE INTO visitors (id, entry_time, persona_name)
+                   VALUES (?, ?, ?)
+               """, (visitor_id, time_str, persona_name))
             conn.commit()
 
 def log_exit(visitor_id, time_str):

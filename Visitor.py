@@ -8,51 +8,18 @@ from Utils.logger import log
 
 
 class Visitor(threading.Thread):
-    # Define personas, values above 1.0 indicate interest and values below 1.0 indicate decreased interest.
-    PERSONAS = {
-       "Cultural": {
-           "cultural": 2.0,
-           "walking": 1.2,
-           "cafe": 1.5,
-           "sport": 0.3,
-           "rental": 0.7
-       },
-       "Sporty": {
-           "cultural": 0.5,
-           "walking": 1.0,
-           "cafe": 0.7,
-           "sport": 2.0,
-           "rental": 1.5
-       },
-       "Relaxed": {
-           "cultural": 1.2,
-           "walking": 1.5,
-           "cafe": 1.8,
-           "sport": 0.2,
-           "rental": 1.0
-       },
-       "Explorer": {
-           "cultural": 1.3,
-           "walking": 1.7,
-           "cafe": 0.8,
-           "sport": 0.6,
-           "rental": 1.8
-       }
-   }
-
-    def __init__(self, visitor_id, park_activities):
+    def __init__(self, visitor_id, park_activities, persona_name, persona_preferences, entry_time, exit_time):
         super().__init__()
         self.visitor_id = visitor_id
         self.park_activities = park_activities
+        self.persona_name = persona_name
+        self.persona_preferences = persona_preferences
         self.coords = (10, 10)
         self.entered = False
         self.running = False
         self.time_manager = None
-
-        # Assign a random persona
-        self.persona_name = random.choice(list(self.PERSONAS.keys()))
-        self.persona_preferences = self.PERSONAS[self.persona_name]
-        log(f"Visitor {self.visitor_id} has persona: {self.persona_name}")
+        self.entry_time_str = entry_time  # string formato HH:MM
+        self.exit_time_str = exit_time
 
     def set_time_manager(self, time_manager):
         self.time_manager = time_manager
@@ -60,10 +27,7 @@ class Visitor(threading.Thread):
 
     def handle_time_event(self, event):
         if event == "open":
-            self.running = True
-            self.entered = True
-            current_time = self.time_manager.get_current_time()
-            log_entry(self.visitor_id, current_time)
+            pass
         elif event == "close":
             self.running = False
 
@@ -177,33 +141,38 @@ class Visitor(threading.Thread):
             # Fallback to random choice if we have no valid weights
             selected_activity = random.choice(self.park_activities)
 
-        # Log including persona information
-        log(f"Visitor {self.visitor_id} ({self.persona_name}) at time {current_time} ({time_of_day}) selected activity: {selected_activity.name}")
         log_activity(self.visitor_id, selected_activity.name, current_time)
         return selected_activity
 
     def run(self):
-        while not self.entered:
-            time.sleep(0.01)
+        while not self.time_manager or not self.time_manager.is_park_open():
+            time.sleep(0.05)
+
+        # esperar hasta la hora asignada
+        while self.time_manager.get_current_time() < self.entry_time_str:
+            time.sleep(0.1)
+
+        self.running = True
+        self.entered = True
+        log_entry(self.visitor_id, self.entry_time_str, self.persona_name)
 
         while True:
-            if not self.running:
+            if not self.running or self.time_manager.get_current_time() >= self.exit_time_str:
+                self.running = False
                 self.smooth_move(self.coords, (10, 10))
-                current_time = self.time_manager.get_current_time()
-                log_exit(self.visitor_id, current_time)
-                log(f"Visitor {self.visitor_id} is starting: leaving.")
+                log_exit(self.visitor_id, self.time_manager.get_current_time())
+                log(f"Visitor {self.visitor_id} is leaving.")
                 break
 
             activity = self.choose_activity()
             target_coords = get_activity_coord(activity.name)
             if self.coords != target_coords:
-                log(f"Visitor {self.visitor_id} moving from {self.coords} to {target_coords} for {activity.name}")
                 self.smooth_move(self.coords, target_coords)
 
             if not self.running:
                 continue
 
-            log(f"Visitor {self.visitor_id} is starting: {activity.name} at {self.coords}")
+            log(f"Visitor {self.visitor_id} is starting: {activity.name}")
             activity.perform(self.visitor_id)
 
 
