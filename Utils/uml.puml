@@ -1,0 +1,163 @@
+@startuml
+title Retiro Park Simulation - Class Diagram
+
+' THREADS
+class Visitor {
+    +run()
+    +set_time_manager()
+    +choose_activity()
+    +smooth_move()
+    -time_manager
+    -persona_preferences
+    -park_activities
+}
+Visitor -up-|> Thread
+
+class TimeManager {
+    +run()
+    +register_listener()
+    +get_current_time()
+    +get_time_of_day()
+    -listeners
+    -current_time
+}
+TimeManager -up-|> Thread
+
+' FACTORIES
+class RetiroPark {
+    -visitors : List<Visitor>
+    -activities : List<Activity>
+    -time_manager : TimeManager
+    +start()
+    +handle_time_event()
+}
+class VisitorFactory {
+    +create_visitors(n)
+}
+class ActivityFactory {
+    +create_all()
+}
+RetiroPark --> ParkGUI : launches
+RetiroPark --> VisitorFactory: uses
+RetiroPark --> ActivityFactory: uses
+RetiroPark --> TimeManager: controls
+RetiroPark --> Visitor : creates
+
+' ACTIVITIES
+abstract class Activity {
+    +perform(visitor_id)
+    -duration
+}
+
+abstract class SportActivity {
+    +perform(visitor_id)
+    -court : SportCourt
+    -condition : Condition
+}
+SportActivity -up-|> Activity
+
+class RentBike {
+    +perform(visitor_id)
+    -bike_rental : BikeRental
+}
+RentBike -up-|> Activity
+
+class RentBoat {
+    +perform(visitor_id)
+    -boat_rental : BoatRental
+}
+RentBoat -up-|> Activity
+
+class VisitCafe {
+    +perform(visitor_id)
+    -cafe : Cafe
+}
+VisitCafe -up-|> Activity
+
+' RENTAL SYSTEM - BIKES
+class Bike {
+    +rent(visitor_id)
+    +release()
+    -bike_id
+    -is_rented
+}
+class BikeRental {
+    +rent_bike(visitor_id)
+    +return_bike(bike)
+    +notify_closure()
+    -bikes : List<Bike>
+}
+BikeRental --> Bike
+RentBike --> BikeRental
+
+' RENTAL SYSTEM - BOATS
+class Boat {
+    +rent(visitor_id)
+    +release()
+    -boat_id
+    -is_rented
+}
+class BoatRental {
+    +rent_boat(visitor_id)
+    +return_boat(boat)
+    +notify_closure()
+    -boats : List<Boat>
+}
+BoatRental --> Boat
+RentBoat --> BoatRental
+
+' CAFES
+class Cafe {
+    +enqueue_visitor(visitor_id, done_event)
+    -baristas : List<Barista>
+    -menu : List<MenuItem>
+}
+class Barista {
+    +run()
+}
+Barista -up-|> Thread
+Cafe --> Barista
+
+class MenuItem {
+    -name
+    -price
+    -description
+}
+Cafe --> MenuItem
+
+' METRICS (abstracted)
+class Logger {
+    +log(message)
+}
+class Database {
+    +log_entry()
+    +log_exit()
+    +log_activity()
+    +log_sport_game()
+    +log_cafe_order()
+}
+
+Visitor --> Activity : performs
+Visitor --> TimeManager : observes
+TimeManager --> Visitor : notifies
+Activity --> Logger: logs_to
+Activity --> Database: records in
+
+' === UI SECTION ===
+class ParkGUI {
+    +update_gui()
+    -visitor_threads
+    -canvas
+    -time_label
+    -day_label
+}
+
+ParkGUI --> Visitor
+ParkGUI --> TimeManager
+
+class get_activity_coord {
+    <<utility>>
+}
+Activity --> get_activity_coord
+
+@enduml
