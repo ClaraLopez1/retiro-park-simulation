@@ -6,9 +6,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-DB_PATH = "../retiro.db"
+DB_PATH = "../retiro-park-simulation/retiro.db"
 def load_cafe_orders():
-    with sqlite3.connect("../retiro.db") as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         df = pd.read_sql_query("SELECT * FROM cafe_orders", conn)
     return df
 

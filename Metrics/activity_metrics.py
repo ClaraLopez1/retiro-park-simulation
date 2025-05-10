@@ -6,7 +6,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
-DB_PATH = "../retiro.db"
+DB_PATH = "../retiro-park-simulation/retiro.db"
 
 def load_activities():
     with sqlite3.connect(DB_PATH) as conn:
