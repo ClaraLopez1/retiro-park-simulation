@@ -1,0 +1,7 @@
+# Core dependencies
+Pillow>=9.0.0         # For image handling in GUI
+pandas>=1.3.0         # For data manipulation in metrics
+matplotlib>=3.5.0     # For generating metrics charts and visualizations
+# Note: Tkinter is required for the GUI but comes pre-installed with Python
+# Note: sqlite3 module is used for database operations and comes pre-installed with Python
+# Note: sys and os modules are used for system operations and come pre-installed with Python
