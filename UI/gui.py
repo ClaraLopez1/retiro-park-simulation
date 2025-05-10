@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk  # Pillow is needed for JPG images
 import threading
 import sys
+import os
 
 import Time_manager as time_manager
 
@@ -24,6 +25,23 @@ class ParkGUI:
 
         # Draw the background image at the top-left corner
         self.canvas.create_image(0, 0, anchor="nw", image=self.bg_image)
+
+        # Create a more attractive exit button with a blue color scheme
+        exit_button = tk.Button(
+            master,
+            text="Close Simulation",
+            command=self.exit_application,
+            bg="blue",  # Slate blue - calming and professional
+            fg="green",
+            font=("Arial", 15, "bold"),
+            padx=15,
+            pady=8,
+            relief="raised",
+            bd=3,
+            activebackground="red",  # Lighter blue when clicked
+            activeforeground="blue"
+        )
+        exit_button.place(x=0, y=0)
 
         time_frame = tk.Frame(master, bg="white", bd=2, relief="ridge")
         time_frame.place(x=self.width - 160, y=10)
@@ -53,7 +71,6 @@ class ParkGUI:
         self.time_label.pack(padx=10, pady=(0, 5))
 
         self.visitor_threads = visitor_threads
-
         self.visitor_items = {}  # Dictionary to store each visitor's dot
         
         # Flag to track when all visitors have left
@@ -65,6 +82,18 @@ class ParkGUI:
         
         # Start checking if all visitors have exited
         self.check_all_visitors_exited()
+    
+    def exit_application(self):
+        """Forcibly exit the application using os._exit()"""
+        print("Exiting application...")
+        try:
+            # Try normal shutdown first
+            self.master.quit()
+            self.master.destroy()
+        except:
+            pass
+        # Force immediate termination
+        os._exit(0)
 
     def update_gui(self):
         for visitor in self.visitor_threads:
@@ -107,20 +136,12 @@ class ParkGUI:
         if active_visitors == 0 and not self.all_visitors_exited:
             self.all_visitors_exited = True
             self.exit_time = self.time_manager.get_current_time()
-            print(f"All visitors have exited the park at {self.exit_time}. Simulation will end in 20 seconds.")
-            
-            # Schedule the final shutdown after 20 seconds
-            self.master.after(20000, self.shutdown_simulation)
+            print(f"All visitors have exited the park at {self.exit_time}.")
             return
             
         # If there are still visitors, check again in 2 seconds
         if not self.all_visitors_exited:
             self.master.after(2000, self.check_all_visitors_exited)
-    
-    def shutdown_simulation(self):
-        """Shutdown the simulation after all visitors have exited"""
-        print(f"Closing simulation after 20-second delay. Final time: {self.time_manager.get_current_time()}")
-        self.master.destroy()
 
 def start_gui(visitor_threads, time_manager):
     root = tk.Tk()
