@@ -137,11 +137,19 @@ class ParkGUI:
             self.all_visitors_exited = True
             self.exit_time = self.time_manager.get_current_time()
             print(f"All visitors have exited the park at {self.exit_time}.")
+            # Schedule application exit after 5 seconds
+            self.master.after(5000, self.stop_simulation)
             return
             
         # If there are still visitors, check again in 2 seconds
         if not self.all_visitors_exited:
             self.master.after(2000, self.check_all_visitors_exited)
+    
+    def stop_simulation(self):
+        """Stop the time manager and close the application"""
+        print("All visitors have exited. Stopping simulation...")
+        self.time_manager.running = False
+        self.exit_application()
 
 def start_gui(visitor_threads, time_manager):
     root = tk.Tk()
