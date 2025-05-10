@@ -41,14 +41,31 @@ class VisitorFactory:
         persona_name = random.choice(list(self.PERSONAS.keys()))
         preferences = self.PERSONAS[persona_name]
 
-        entry_hour = random.randint(6, 18)  # entra entre las 6 y 18
-        exit_hour = random.randint(entry_hour + 1, 22)  # sale después de entrar, hasta las 22
-        entry_time = f"{entry_hour:02}:00"
-        exit_time = f"{exit_hour:02}:00"
+        entry_hour = random.randint(6, 18)
+        entry_dt = datetime.strptime(f"{entry_hour:02}:00", "%H:%M")
+        exit_dt = self.get_exit(entry_hour, persona_name)
+
+        entry_time = entry_dt.strftime("%H:%M")
+        exit_time = exit_dt.strftime("%H:%M")
 
         return Visitor(visitor_id, self.activities, persona_name, preferences, entry_time, exit_time)
 
     def create_visitors(self, count):
         return [self.create_visitor(i) for i in range(count)]
 
+    def get_exit(self, entry_hour, persona_name):
+        entry_dt = datetime.strptime(f"{entry_hour:02}:00", "%H:%M")
+
+        if persona_name == "Cultural":
+            exit_dt = entry_dt + timedelta(hours=random.randint(1, 6))
+        elif persona_name == "Sporty":
+            exit_dt = entry_dt + timedelta(hours=random.randint(2, 3))
+        elif persona_name == "Relaxed":
+            exit_dt = entry_dt + timedelta(hours=random.randint(1, 4))
+        elif persona_name == "Explorer":
+            exit_dt = entry_dt + timedelta(hours=random.randint(1, 5))
+        else:
+            exit_dt = entry_dt + timedelta(hours=random.randint(1, 4))
+
+        return exit_dt
 
