@@ -1,9 +1,11 @@
 import threading
 import time
 import random
+from datetime import datetime
 from queue import Queue
 
 from Activities.Cafes.Menu.MenuItem import MenuItem
+from Utils.database import log_cafe_wait_time
 from Utils.logger import log
 
 
@@ -15,10 +17,17 @@ class Barista(threading.Thread):
 
     def run(self):
         while True:
-            visitor_id, done_event = self.cafe.queue.get()
-            prep_time = random.randint(1, 3)
-            time.sleep(prep_time)
+            visitor_id, done_event, arrival_time = self.cafe.queue.get()
+            served_time = datetime.now()
+            wait_duration = int((served_time - arrival_time).total_seconds())
+
+            prep_duration = random.randint(1, 3)
+            time.sleep(prep_duration)
+
             log(f"[{self.cafe.name}] Barista {self.barista_id} finished serving Visitor {visitor_id}")
+            log_cafe_wait_time(visitor_id, self.cafe.name, arrival_time, served_time, prep_duration,
+                               wait_duration)
+
             done_event.set()
             self.cafe.queue.task_done()
 
@@ -39,7 +48,7 @@ class Cafe:
             MenuItem("Tostado", 3.00, "Tostado de jamón y queso"),
         ]
 
-    def enqueue_visitor(self, visitor_id, done_event):
-        self.queue.put((visitor_id, done_event))
+    def enqueue_visitor(self, visitor_id, done_event, arrival_time):
+        self.queue.put((visitor_id, done_event, arrival_time))
 
 

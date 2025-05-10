@@ -1,6 +1,8 @@
 import queue
 import threading
+from datetime import datetime
 
+from Utils.database import log_boat_wait_time
 from Utils.logger import log
 
 
@@ -30,10 +32,14 @@ class BoatRental:
         self.condition = threading.Condition(self.lock)
 
     def rent_boat(self, visitor_id):
+        arrival_time = datetime.now()
         with self.condition:
             while True:
                 for boat in self.boats:
                     if boat.rent(visitor_id):
+                        assigned_time = datetime.now()
+                        wait_duration = int((assigned_time - arrival_time).total_seconds())
+                        log_boat_wait_time(visitor_id, arrival_time, assigned_time, wait_duration)
                         return boat
 
 

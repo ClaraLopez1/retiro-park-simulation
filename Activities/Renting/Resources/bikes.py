@@ -1,6 +1,8 @@
 import queue
 import threading
+from datetime import datetime
 
+from Utils.database import log_bike_wait_time
 from Utils.logger import log
 
 
@@ -29,10 +31,14 @@ class BikeRental:
         self.condition = threading.Condition(self.lock) #Allows threads to wait or be notified when resources are available
 
     def rent_bike(self, visitor_id):
+        arrival_time = datetime.now()
         with self.condition:
             while True:
                 for bike in self.bikes:
                     if bike.rent(visitor_id):
+                        assigned_time = datetime.now()
+                        wait_duration = int((assigned_time - arrival_time).total_seconds())
+                        log_bike_wait_time(visitor_id, arrival_time, assigned_time, wait_duration)
                         return bike
 
                 log(f"⏳Visitor {visitor_id} is waiting for a bike.")

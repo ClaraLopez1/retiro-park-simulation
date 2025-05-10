@@ -1,4 +1,6 @@
 import random
+from datetime import datetime
+
 from Activities.activity import Activity
 import threading
 from Utils.logger import log
@@ -14,10 +16,11 @@ class VisitCafe(Activity):
 
     def perform(self, visitor_id):
         item = random.choice(self.cafe.menu)
+        arrival_time = datetime.now()
         log(f"Visitor {visitor_id} arrived at {self.cafe.name} and orders '{item.name}' (${item.price:.2f}): {item.description}")
 
         done_event = threading.Event()
-        self.cafe.enqueue_visitor(visitor_id, done_event)
+        self.cafe.enqueue_visitor(visitor_id, done_event, arrival_time)
 
         log(f"⏳Visitor {visitor_id} is waiting for '{item.name}' at {self.cafe.name}")
         done_event.wait()

@@ -51,6 +51,30 @@ def init_db():
         )
         """)
 
+        cursor.execute("""
+                CREATE TABLE IF NOT EXISTS cafe_wait_times (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    visitor_id INTEGER,
+                    cafe_name TEXT,
+                    arrival_time TEXT,
+                    served_time TEXT,
+                    prep_duration INTEGER,
+                    wait_duration INTEGER,
+                    FOREIGN KEY(visitor_id) REFERENCES visitors(id)
+                )
+                """)
+
+        cursor.execute("""
+                        CREATE TABLE IF NOT EXISTS sport_wait_times (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        visitor_id INTEGER,
+                        sport_name TEXT,
+                        arrival_time TEXT,
+                        start_time TEXT,
+                        wait_duration INTEGER
+                    )
+                     """)
+
         conn.commit()
 
 
@@ -101,3 +125,83 @@ def log_sport_game(sport_name, duration, player_ids):
                 conn.commit()
         except Exception as e:
             print(f"[DB ERROR] Failed to log sport game '{sport_name}': {e}")
+
+def log_cafe_wait_time(visitor_id, cafe_name, arrival_time, served_time, prep_duration, wait_duration):
+    with db_lock:
+        with get_connection() as conn:
+            conn.execute("""
+                INSERT INTO cafe_wait_times (
+                    visitor_id, cafe_name, arrival_time, served_time,
+                    prep_duration, wait_duration
+                ) VALUES (?, ?,?, ?, ?, ?)
+            """, (
+                visitor_id, cafe_name,
+                arrival_time.strftime("%H:%M:%S"),
+                served_time.strftime("%H:%M:%S"),
+                prep_duration, wait_duration
+            ))
+            conn.commit()
+
+def log_sport_wait_time(visitor_id, sport_name, arrival_time, start_time, wait_duration):
+    with db_lock:
+        with get_connection() as conn:
+            conn.execute("""
+                INSERT INTO sport_wait_times (
+                    visitor_id, sport_name, arrival_time, start_time, wait_duration
+                ) VALUES (?, ?, ?, ?, ?)
+            """, (
+                visitor_id,
+                sport_name,
+                arrival_time.strftime("%H:%M:%S"),
+                start_time.strftime("%H:%M:%S"),
+                wait_duration
+            ))
+            conn.commit()
+
+def log_boat_wait_time(visitor_id, arrival_time, assigned_time, wait_duration):
+    with db_lock:
+        with get_connection() as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS boat_wait_times (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    visitor_id INTEGER,
+                    arrival_time TEXT,
+                    assigned_time TEXT,
+                    wait_duration INTEGER
+                )
+            """)
+            conn.execute("""
+                INSERT INTO boat_wait_times (
+                    visitor_id, arrival_time, assigned_time, wait_duration
+                ) VALUES (?, ?, ?, ?)
+            """, (
+                visitor_id,
+                arrival_time.strftime("%H:%M:%S"),
+                assigned_time.strftime("%H:%M:%S"),
+                wait_duration
+            ))
+            conn.commit()
+
+def log_bike_wait_time(visitor_id, arrival_time, assigned_time, wait_duration):
+    with db_lock:
+        with get_connection() as conn:
+            conn.execute("""
+                CREATE TABLE IF NOT EXISTS bike_wait_times (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    visitor_id INTEGER,
+                    arrival_time TEXT,
+                    assigned_time TEXT,
+                    wait_duration INTEGER
+                )
+            """)
+            conn.execute("""
+                INSERT INTO bike_wait_times (
+                    visitor_id, arrival_time, assigned_time, wait_duration
+                ) VALUES (?, ?, ?, ?)
+            """, (
+                visitor_id,
+                arrival_time.strftime("%H:%M:%S"),
+                assigned_time.strftime("%H:%M:%S"),
+                wait_duration
+            ))
+            conn.commit()

@@ -4,10 +4,8 @@ from Visitor_Factory import VisitorFactory
 from Activities.Renting.rent_bike import RentBike
 from Activities.Renting.rent_boat import RentBoat
 from Activities.Sports.sports_activities import SportActivity
-
 from Time_manager import TimeManager
 from Utils.logger import log, set_time_manager
-from Visitor import Visitor
 from Utils.database import init_db
 
 
@@ -38,6 +36,7 @@ class RetiroPark:
                     activity.boat_rental.notify_closure()
 
     def start(self):
+        log("Retiro Park is opening!")
         self.time_manager.start()
         for visitor in self.visitors:
             visitor.start()

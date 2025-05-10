@@ -1,11 +1,14 @@
 import threading
 import time
 import random
+from datetime import datetime
+
 from Activities.activity import Activity
 from Utils.logger import log
 from UI.park_map import get_activity_coord
 from queue import Queue
-from Utils.database import log_sport_game
+from Utils.database import log_sport_game, log_sport_wait_time
+
 
 class SportCourt:
     def __init__(self, sport_type):
@@ -29,16 +32,25 @@ class SportActivity(Activity):
         self.waiting_queue = Queue()
 
     def perform(self, visitor_id):
-        self.waiting_queue.put(visitor_id)
+        arrival_time = datetime.now()
+        self.waiting_queue.put((visitor_id, arrival_time))
         log(f"⏳Visitor {visitor_id} joined the waiting queue for {self.name}.")
 
         with self.condition:
+            wait_times = []
             while self.game_in_progress:
                 self.condition.wait()
 
             if self.waiting_queue.qsize() >= self.players_needed:
                 self.game_in_progress = True
-                self.last_players = [self.waiting_queue.get() for _ in range(self.players_needed)]
+                self.last_players = []
+                start_time = datetime.now()
+
+                for _ in range(self.players_needed):
+                    vid, arr_time = self.waiting_queue.get()
+                    wait = max(0, int((start_time - arr_time).total_seconds()))
+                    wait_times.append((vid, arr_time, wait))
+                    self.last_players.append(vid)  # solo el ID
                 log(f"\n---🎾Game of {self.name} START ---")
                 log(f"Players: {self.last_players}")
                 # Notificar a todos que el juego ha iniciado
@@ -59,6 +71,9 @@ class SportActivity(Activity):
                 self.condition.notify_all()
             self.court.lock.release()
             log_sport_game(self.name, game_duration, self.last_players)
+            for vid, arr_time, wait in wait_times:
+                log_sport_wait_time(vid, self.name, arr_time, start_time, wait)
+
             log(f"Court lock released for {self.name}.")
         else:
             with self.condition:

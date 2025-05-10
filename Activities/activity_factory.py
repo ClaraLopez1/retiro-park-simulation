@@ -10,7 +10,7 @@ from Activities.simple_activities import *
 
 class ActivityFactory:
     def __init__(self):
-        self.boat_rental = BoatRental(num_boats=5)
+        self.boat_rental = BoatRental(num_boats=6)
         self.bike_rental = BikeRental(num_bikes=7)
 
     def create_all(self):
@@ -43,8 +43,8 @@ class ActivityFactory:
             MenuItem("Té verde", 2.00, "Té verde orgánico"),
         ]
 
-        star_cafe = Cafe("StarCafe", num_baristas=10, menu_items=menu_star)
-        retiro_bistro = Cafe("RetiroBistro", num_baristas=3, menu_items=menu_bistro)
+        star_cafe = Cafe("StarCafe", num_baristas=2, menu_items=menu_star)
+        retiro_bistro = Cafe("RetiroBistro", num_baristas=1, menu_items=menu_bistro)
 
         activities.append(VisitCafe(star_cafe))
         activities.append(VisitCafe(retiro_bistro))
