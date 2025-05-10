@@ -114,6 +114,6 @@ retiro-park-simulation/
 ├── Utils/                   # Utility functions
 │   ├── database.py          # Database operations
 │   └── logger.py            # Logging functionality
-├── retiro.db                # SQLite database for simulation data
+├── retiro.db                # SQLite database for simulation data (added when simulation has been run)
 └── requirements.txt         # Project dependencies
 ```
