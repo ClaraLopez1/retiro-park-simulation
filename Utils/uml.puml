@@ -49,7 +49,7 @@ abstract class Activity {
     -duration
 }
 
-abstract class SportActivity {
+class SportActivity {
     +perform(visitor_id)
     -court : SportCourt
     -condition : Condition
@@ -73,6 +73,7 @@ class VisitCafe {
     -cafe : Cafe
 }
 VisitCafe -up-|> Activity
+VisitCafe --> Cafe
 
 ' RENTAL SYSTEM - BIKES
 class Bike {
@@ -155,9 +156,5 @@ class ParkGUI {
 ParkGUI --> Visitor
 ParkGUI --> TimeManager
 
-class get_activity_coord {
-    <<utility>>
-}
-Activity --> get_activity_coord
 
 @enduml

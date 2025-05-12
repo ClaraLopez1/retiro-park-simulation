@@ -1,6 +1,9 @@
 from Activities.activity import Activity as activity
 from UI.park_map import get_activity_coord
 
+# Each of these classes defines a simple activity available in the park.
+# They inherit from the base Activity class and set a specific name, duration range,
+# and coordinates using the map layout (get_activity_coord).
 
 class Walking(activity):
     def __init__(self):

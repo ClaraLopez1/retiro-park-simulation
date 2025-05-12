@@ -1,5 +1,4 @@
 import random
-import sqlite3
 import threading
 import time
 from UI.park_map import get_activity_coord
@@ -18,7 +17,7 @@ class Visitor(threading.Thread):
         self.entered = False
         self.running = False
         self.time_manager = None
-        self.entry_time_str = entry_time  # string formato HH:MM
+        self.entry_time_str = entry_time
         self.exit_time_str = exit_time
 
     def set_time_manager(self, time_manager):
@@ -145,18 +144,22 @@ class Visitor(threading.Thread):
         return selected_activity
 
     def run(self):
+        # Wait until TimeManager is initialized and park is officially open
         while not self.time_manager or not self.time_manager.is_park_open():
             time.sleep(0.05)
 
-        # esperar hasta la hora asignada
+        # Wait until the visitor's assigned entry time
         while self.time_manager.get_current_time() < self.entry_time_str:
             time.sleep(0.1)
 
+        # Mark visitor as active and log their entry
         self.running = True
         self.entered = True
         log_entry(self.visitor_id, self.entry_time_str, self.persona_name)
 
+        # Main loop: keeps the visitor inside the park until exit time or park closes
         while True:
+            # Check if it's time to leave the park
             if not self.running or self.time_manager.get_current_time() >= self.exit_time_str:
                 self.running = False
                 self.smooth_move(self.coords, (10, 10))
@@ -164,11 +167,13 @@ class Visitor(threading.Thread):
                 log(f"Visitor {self.visitor_id} is leaving.")
                 break
 
+            # Select next activity based on time of day and persona
             activity = self.choose_activity()
             target_coords = get_activity_coord(activity.name)
+            # Move to the activity location with smooth animation
             if self.coords != target_coords:
                 self.smooth_move(self.coords, target_coords)
-
+            # Check again in case running status changed during movement
             if not self.running:
                 continue
 

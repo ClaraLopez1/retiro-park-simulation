@@ -1,10 +1,8 @@
 import matplotlib
-
 matplotlib.use("TkAgg")
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
 DB_PATH = "../retiro-park-simulation/retiro.db"
 def load_sport_games():

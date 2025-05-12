@@ -1,17 +1,14 @@
 import tkinter as tk
 from PIL import Image, ImageTk  # Pillow is needed for JPG images
-import threading
-import sys
 import os
-
-import Time_manager as time_manager
 
 
 class ParkGUI:
     def __init__(self, master, visitor_threads, time_manager):
         self.master = master
         self.time_manager = time_manager
-        # Load the JPG image using PIL
+
+        # Load and display background image of the park
         pil_image = Image.open("UI/retiro.jpg")
         self.bg_image = ImageTk.PhotoImage(pil_image)
 
@@ -26,27 +23,28 @@ class ParkGUI:
         # Draw the background image at the top-left corner
         self.canvas.create_image(0, 0, anchor="nw", image=self.bg_image)
 
-        # Create a more attractive exit button with a blue color scheme
+        # Create a styled button to manually exit the simulation
         exit_button = tk.Button(
             master,
             text="Close Simulation",
             command=self.exit_application,
-            bg="blue",  # Slate blue - calming and professional
+            bg="blue",
             fg="green",
             font=("Arial", 15, "bold"),
             padx=15,
             pady=8,
             relief="raised",
             bd=3,
-            activebackground="red",  # Lighter blue when clicked
+            activebackground="red",
             activeforeground="blue"
         )
         exit_button.place(x=0, y=0)
 
+        # Display current simulation day and time
         time_frame = tk.Frame(master, bg="white", bd=2, relief="ridge")
         time_frame.place(x=self.width - 160, y=10)
 
-        # Día
+        # Day
         self.day_label = tk.Label(
             time_frame,
             text="",
@@ -58,7 +56,7 @@ class ParkGUI:
         )
         self.day_label.pack(padx=10, pady=(5, 0))
 
-        # Hora
+        # Time
         self.time_label = tk.Label(
             time_frame,
             text="",
@@ -77,9 +75,8 @@ class ParkGUI:
         self.all_visitors_exited = False
         # Time when all visitors exited
         self.exit_time = None
-
+        # Start the main update loop
         self.update_gui()
-        
         # Start checking if all visitors have exited
         self.check_all_visitors_exited()
     
@@ -111,7 +108,7 @@ class ParkGUI:
                 # Update the dot's position on the canvas
                 self.canvas.coords(self.visitor_items[vid], x - 5, y - 5, x + 5, y + 5)
                 
-                # Change color if visitor is leaving/not running
+                # Change color if visitor is leaving
                 if not visitor.running:
                     self.canvas.itemconfig(self.visitor_items[vid], fill="blue")
                 else:
@@ -119,6 +116,8 @@ class ParkGUI:
                 
         # Schedule the next update after 100 milliseconds
         self.master.after(100, self.update_gui)
+
+        # Refresh time and day labels
         self.time_label.config(text=self.time_manager.get_current_time())
         self.day_label.config(text=self.time_manager.get_current_day())
     
@@ -152,6 +151,7 @@ class ParkGUI:
         self.exit_application()
 
 def start_gui(visitor_threads, time_manager):
+    """Entrypoint to launch the Tkinter GUI loop"""
     root = tk.Tk()
     root.title("Retiro Park Simulation")
     gui = ParkGUI(root, visitor_threads, time_manager)

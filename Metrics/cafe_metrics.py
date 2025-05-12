@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("TkAgg")  # Soluciona el error del backend en PyCharm
+matplotlib.use("TkAgg")
 import numpy as np
 import sqlite3
 import pandas as pd

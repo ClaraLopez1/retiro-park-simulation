@@ -1,10 +1,8 @@
 import matplotlib
-
 matplotlib.use("TkAgg")
 import sqlite3
 import pandas as pd
 import matplotlib.pyplot as plt
-import numpy as np
 
 DB_PATH = "../retiro-park-simulation/retiro.db"
 CLOSING_TIME = pd.to_datetime("22:00", format="%H:%M")

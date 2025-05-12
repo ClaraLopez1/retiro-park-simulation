@@ -10,7 +10,6 @@ def get_connection():
 def init_db():
     with get_connection() as conn:
         cursor = conn.cursor()
-        # Tabla de visitantes
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS visitors (
             id INTEGER PRIMARY KEY,
@@ -19,7 +18,6 @@ def init_db():
             persona_name TEXT
         )
         """)
-        # Tabla de actividades
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS activities (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,7 +28,6 @@ def init_db():
         )
         """)
 
-        # Tabla de órdenes en cafés
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS cafe_orders (
             id INTEGER PRIMARY KEY AUTOINCREMENT,

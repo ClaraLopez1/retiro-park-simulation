@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("TkAgg")  # Soluciona el error del backend en PyCharm
+matplotlib.use("TkAgg")
 import numpy as np
 import sqlite3
 import pandas as pd
@@ -20,14 +20,13 @@ def plot_activity_count_by_hour():
         print("No activity data found.")
         return
 
-    # Parseo correcto del timestamp
     df["timestamp"] = pd.to_datetime(df["timestamp"], format="%H:%M", errors="coerce")
     df["hour"] = df["timestamp"].dt.hour
 
     grouped = df.groupby(["hour", "activity_name"]).size().unstack(fill_value=0)
 
     num_activities = grouped.shape[1]
-    colors = cm.get_cmap("tab20", num_activities).colors  # hasta 20 colores bien diferenciados
+    colors = cm.get_cmap("tab20", num_activities).colors
 
     plt.figure(figsize=(14, 6))
     ax = grouped.plot(kind="line", marker="o", color=colors, linewidth=2, ax=plt.gca())

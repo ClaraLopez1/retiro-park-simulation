@@ -3,6 +3,8 @@ from Visitor import Visitor
 from datetime import datetime, timedelta
 
 class VisitorFactory:
+    # Defines behavior profiles for different visitor "personas"
+    # Each persona has a different weight (preference) for activity types
     PERSONAS = {
         "Cultural": {
             "cultural": 2.0,
@@ -35,16 +37,19 @@ class VisitorFactory:
     }
 
     def __init__(self, activities):
+        # List of all available park activities passed in from main simulator
         self.activities = activities
 
     def create_visitor(self, visitor_id):
+        # Randomly assign one of the predefined personas
         persona_name = random.choice(list(self.PERSONAS.keys()))
         preferences = self.PERSONAS[persona_name]
-
+        # Randomize visitor's entry time between 6:00 and 18:00
         entry_hour = random.randint(6, 18)
+        # Calculate exit time based on persona behavior
         entry_dt = datetime.strptime(f"{entry_hour:02}:00", "%H:%M")
         exit_dt = self.get_exit(entry_hour, persona_name)
-
+        # Format times for consistency
         entry_time = entry_dt.strftime("%H:%M")
         exit_time = exit_dt.strftime("%H:%M")
 
@@ -55,7 +60,7 @@ class VisitorFactory:
 
     def get_exit(self, entry_hour, persona_name):
         entry_dt = datetime.strptime(f"{entry_hour:02}:00", "%H:%M")
-
+        # Assign a stay duration based on persona-specific logic
         if persona_name == "Cultural":
             exit_dt = entry_dt + timedelta(hours=random.randint(1, 6))
         elif persona_name == "Sporty":
